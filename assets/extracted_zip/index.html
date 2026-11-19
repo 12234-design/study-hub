@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JIIT Exam Hub - T1, T2, T3 Countdown & Semester Chapter Manager</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti for milestone celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom CSS with Vibrant Magenta-Pink theme -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-nav">
+      <div class="brand-wrapper">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <h1>JIIT Exam Hub</h1>
+          <p>Jaypee Institute • T1 (20M) | T2 (20M) | T3 (35M) & Chapter Manager</p>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <!-- 3 Exam Options: T1 Examination, T2 Examination, T3 Examination -->
+        <div class="exam-selector-wrap">
+          <label for="examSelect"><i class="fa-solid fa-award"></i> Exam:</label>
+          <select id="examSelect" class="exam-dropdown">
+            <option value="t1">T1 Examination (20 Marks)</option>
+            <option value="t2">T2 Examination (20 Marks)</option>
+            <option value="t3">T3 Examination (35 Marks - End Sem)</option>
+          </select>
+        </div>
+
+        <!-- 5 Branches: CSE, IT, ECE, Mathematics & Computing, Robotics & AI -->
+        <div class="exam-selector-wrap">
+          <label for="branchSelect"><i class="fa-solid fa-code-branch"></i> Branch:</label>
+          <select id="branchSelect" class="exam-dropdown">
+            <option value="cse" selected>CSE</option>
+            <option value="it">IT</option>
+            <option value="ece">ECE</option>
+            <option value="mnc">Mathematics & Computing</option>
+            <option value="rai">Robotics & AI</option>
+          </select>
+        </div>
+
+        <!-- Semester Selector (Sem 1 to Sem 4) -->
+        <div class="exam-selector-wrap">
+          <label for="semSelect"><i class="fa-solid fa-layer-group"></i> Sem:</label>
+          <select id="semSelect" class="exam-dropdown">
+            <option value="sem1">Semester 1</option>
+            <option value="sem2">Semester 2</option>
+            <option value="sem3">Semester 3</option>
+            <option value="sem4" selected>Semester 4</option>
+          </select>
+        </div>
+
+        <!-- Audio mute/unmute chime toggle -->
+        <button id="soundToggleBtn" class="btn-secondary" title="Toggle Sound Effects">
+          <i class="fa-solid fa-volume-high"></i>
+          <span class="btn-text">Audio</span>
+        </button>
+
+        <!-- Reset / Sample Data -->
+        <button id="resetDataBtn" class="btn-secondary" title="Reset Semester Data">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Reset</span>
+        </button>
+
+        <!-- THEME TOGGLE BUTTON AT TOP CORNER -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark and Light mode" title="Switch Theme">
+          <i class="fa-solid fa-sun" id="themeIcon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- QUICK STATS RIBBON -->
+    <section class="stats-ribbon">
+      <div class="stat-card">
+        <div class="stat-icon flame">
+          <i class="fa-solid fa-fire"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" id="statStreak">6 Days</div>
+          <div class="stat-label">Daily Study Streak</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon clock">
+          <i class="fa-solid fa-stopwatch"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" id="statFocusTime">0 hrs</div>
+          <div class="stat-label">Today's Focus Time</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon target">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" id="statSyllabus">0%</div>
+          <div class="stat-label" id="statSyllabusLabel">T1 Syllabus Mastered</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon panic">
+          <i class="fa-solid fa-gauge-high"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" id="statPanicLevel">Moderate</div>
+          <div class="stat-label">Readiness & Panic Status</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN TWO-COLUMN DASHBOARD GRID -->
+    <main class="dashboard-grid">
+
+      <!-- LEFT COLUMN: PANIC CALCULATOR & SYLLABUS TRACKER -->
+      <div class="left-column">
+
+        <!-- ========================================== -->
+        <!-- 1. EXAM COUNTDOWN & PANIC CALCULATOR HERO -->
+        <!-- ========================================== -->
+        <div class="dashboard-card panic-hero-card">
+          
+          <div class="exam-target-banner">
+            <div class="exam-name-date">
+              <h3 id="targetExamTitle">
+                <span>T1 Examination</span>
+                <span class="exam-marks-badge" id="examMarksBadge">20 Marks</span>
+              </h3>
+              <span>
+                <i class="fa-regular fa-calendar-check"></i> Target Date: <strong id="targetDateDisplay">Feb 15, 2027</strong>
+              </span>
+            </div>
+            <button class="edit-exam-btn" id="openExamEditModal">
+              <i class="fa-solid fa-pen-to-square"></i> Change Date
+            </button>
+          </div>
+
+          <!-- Countdown Digits -->
+          <div class="countdown-clock">
+            <div class="time-box">
+              <div class="time-num" id="cdDays">00</div>
+              <div class="time-label">Days Left</div>
+            </div>
+            <div class="time-box">
+              <div class="time-num" id="cdHours">00</div>
+              <div class="time-label">Hours</div>
+            </div>
+            <div class="time-box">
+              <div class="time-num" id="cdMinutes">00</div>
+              <div class="time-label">Minutes</div>
+            </div>
+            <div class="time-box">
+              <div class="time-num" id="cdSeconds">00</div>
+              <div class="time-label">Seconds</div>
+            </div>
+          </div>
+
+          <!-- The Panic Calculator Interactive Section -->
+          <div class="panic-meter-section">
+            <div class="panic-meter-header">
+              <div class="card-title-group">
+                <i class="fa-solid fa-calculator"></i>
+                <h3 style="font-size: 0.95rem; font-weight: 800;">Semester Exam Panic & Readiness Index</h3>
+              </div>
+              <span id="panicBadge" class="panic-status-badge moderate">
+                <i class="fa-solid fa-bolt"></i> <span id="panicBadgeText">Focused Sprint</span>
+              </span>
+            </div>
+
+            <!-- Progress Risk Bar -->
+            <div class="panic-track">
+              <div id="panicFillBar" class="panic-fill" style="width: 50%;"></div>
+            </div>
+
+            <!-- Panic Metric Breakdown -->
+            <div class="panic-stats-grid">
+              <div class="p-stat">
+                <div class="val" id="calcPendingChapters">0</div>
+                <div class="lbl">Pending Exam Units</div>
+              </div>
+              <div class="p-stat">
+                <div class="val" id="calcEstimatedHours">0 hrs</div>
+                <div class="lbl">Study Hours Needed</div>
+              </div>
+              <div class="p-stat">
+                <div class="val" id="calcDailyQuota">0 hrs/day</div>
+                <div class="lbl">Daily Quota Needed</div>
+              </div>
+              <div class="p-stat">
+                <div class="val" id="calcPace">0 ch/wk</div>
+                <div class="lbl">Target Weekly Pace</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Days Distribution -->
+          <div class="subject-breakdown-title">
+            <span><i class="fa-solid fa-hourglass-half"></i> Remaining Days Available Per Subject</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; text-transform: none;">
+              <label for="bufferDaysInput">PYQ/Revision Buffer:</label>
+              <input type="number" id="bufferDaysInput" min="0" max="30" value="5" style="width: 48px; padding: 2px 4px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-main); font-weight: 800; text-align: center;">
+              <span>days</span>
+            </div>
+          </div>
+
+          <div id="subjectDaysList" class="subject-days-list">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+
+          <!-- Dynamic Reality-Check Advice -->
+          <div class="panic-advice-box">
+            <i class="fa-solid fa-lightbulb"></i>
+            <p id="panicAdviceText">
+              Loading tailored study recommendation...
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 2. SEMESTER CHAPTER & SYLLABUS MANAGER -->
+        <!-- ========================================== -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <i class="fa-solid fa-book-bookmark"></i>
+              <div>
+                <h2>Semester Subject & Chapter Manager</h2>
+                <div class="card-subtitle" id="syllabusOverallSubtitle">Manage chapters, tutorials and units for JIIT exams</div>
+              </div>
+            </div>
+
+            <button class="btn-secondary" id="openAddSubjectModal">
+              <i class="fa-solid fa-folder-plus"></i> Add Subject
+            </button>
+          </div>
+
+          <!-- Syllabus Controls & Subject Tabs -->
+          <div class="syllabus-controls">
+            <div class="subject-tabs" id="subjectTabsContainer">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div class="filter-search-bar">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="chapterSearch" placeholder="Search chapter or topic name...">
+              </div>
+
+              <!-- Filter by T1, T2, T3 or Status -->
+              <select id="statusFilter" class="status-filter-select">
+                <option value="current-exam">Current Exam Units Only</option>
+                <option value="all">All Units / Chapters</option>
+                <option value="t1">T1 Units Only (20M)</option>
+                <option value="t2">T2 Units Only (20M)</option>
+                <option value="t3">T3 Units Only (35M)</option>
+                <option value="pending">Pending Only</option>
+                <option value="completed">Mastered Only</option>
+                <option value="high-weightage">High Weightage</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Chapter List Container -->
+          <div class="chapter-list" id="chapterListContainer">
+            <!-- Dynamic Chapters Rendered Here -->
+          </div>
+
+          <!-- Quick Add Chapter Row -->
+          <form id="quickAddChapterForm" class="add-chapter-bar">
+            <input type="text" id="newChapterName" class="add-chapter-input" placeholder="Add chapter / unit (e.g., Paging & Virtual Memory)..." required>
+            <select id="newChapterExamTag" class="status-filter-select" style="max-width: 100px;">
+              <option value="T1">T1 Unit</option>
+              <option value="T2">T2 Unit</option>
+              <option value="T3">T3 Unit</option>
+            </select>
+            <select id="newChapterWeightage" class="status-filter-select" style="max-width: 100px;">
+              <option value="High">High Wtg</option>
+              <option value="Medium" selected>Med Wtg</option>
+              <option value="Low">Low Wtg</option>
+            </select>
+            <input type="number" id="newChapterHours" placeholder="Hrs" min="1" max="40" value="6" style="width: 60px; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-main); font-weight: 800; text-align: center;">
+            <button type="submit" class="btn-add-chapter">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+
+
+      <!-- RIGHT COLUMN: POMODORO TIMER, DAILY HABITS & SCRATCHPAD -->
+      <div class="right-column">
+
+        <!-- ========================================== -->
+        <!-- 3. POMODORO FOCUS TIMER -->
+        <!-- ========================================== -->
+        <div class="dashboard-card pomodoro-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <i class="fa-solid fa-clock"></i>
+              <h2>Focus Pomodoro</h2>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: var(--brand-primary-light);">
+              Session: <span id="pomoSessionCount">0</span> completed
+            </div>
+          </div>
+
+          <!-- Timer Mode Switcher -->
+          <div class="pomo-modes">
+            <button class="pomo-mode-btn active" data-mode="focus" data-duration="25">Focus (25m)</button>
+            <button class="pomo-mode-btn" data-mode="deep" data-duration="50">Deep Work (50m)</button>
+            <button class="pomo-mode-btn" data-mode="shortBreak" data-duration="5">Short (5m)</button>
+            <button class="pomo-mode-btn" data-mode="longBreak" data-duration="15">Long (15m)</button>
+          </div>
+
+          <!-- SVG Circular Timer Dial (Glowing Magenta-Pink) -->
+          <div class="timer-dial-container">
+            <svg class="timer-svg" viewBox="0 0 240 240">
+              <circle class="timer-bg-circle" cx="120" cy="120" r="110"></circle>
+              <circle id="timerProgressCircle" class="timer-progress-circle" cx="120" cy="120" r="110"></circle>
+            </svg>
+            <div class="timer-display-inner">
+              <div class="timer-digits" id="timerDisplay">25:00</div>
+              <div class="timer-session-label" id="timerModeLabel">Deep Focus</div>
+            </div>
+          </div>
+
+          <!-- Action Controls -->
+          <div class="timer-action-buttons">
+            <button id="timerResetBtn" class="btn-timer-control" title="Reset Timer">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button id="timerPlayBtn" class="btn-timer-primary" title="Start Focus Session">
+              <i class="fa-solid fa-play" id="playIcon"></i>
+            </button>
+            <button id="timerSkipBtn" class="btn-timer-control" title="Skip Session">
+              <i class="fa-solid fa-forward-step"></i>
+            </button>
+          </div>
+
+          <!-- Tag Current Study Topic -->
+          <div class="timer-tag-selector">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; white-space: nowrap;">
+              <i class="fa-solid fa-tag"></i> Studying:
+            </span>
+            <select id="pomoTopicSelector">
+              <!-- Dynamically populated with chapters from the active subject -->
+              <option value="General Prep">General Tutorial & Notes Revision</option>
+            </select>
+          </div>
+
+          <!-- Ambient Audio Player for Focus (Rain, White Noise, Cafe) -->
+          <div class="ambient-sound-bar">
+            <div class="ambient-left">
+              <i class="fa-solid fa-headphones"></i>
+              <span>Focus Ambience:</span>
+            </div>
+            <div class="ambient-btn-group">
+              <button class="ambient-chip active" data-sound="off">Off</button>
+              <button class="ambient-chip" data-sound="rain">🌧️ Rain</button>
+              <button class="ambient-chip" data-sound="white">💨 Noise</button>
+              <button class="ambient-chip" data-sound="cafe">☕ Cafe</button>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 4. DAILY HABIT STREAKS & COLLEGE ROUTINE -->
+        <!-- ========================================== -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <i class="fa-solid fa-fire-flame-curved" style="color: #f59e0b;"></i>
+              <h2>College Study Habits</h2>
+            </div>
+            <div class="habit-card-header-badge">
+              <i class="fa-solid fa-fire"></i> <span id="headerStreakNum">6</span> Day Streak
+            </div>
+          </div>
+
+          <!-- Habit List -->
+          <div class="habit-list" id="habitListContainer">
+            <!-- Dynamically populated habits -->
+          </div>
+
+          <!-- Add Habit Form -->
+          <form id="addHabitForm" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <input type="text" id="newHabitText" class="add-chapter-input" placeholder="Add custom goal (e.g., Complete OS Lab 3)..." required>
+            <button type="submit" class="btn-secondary" style="white-space: nowrap;">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
+          </form>
+
+          <!-- 7-Day Matrix Activity Indicator -->
+          <div class="habit-matrix-section">
+            <div class="matrix-header">
+              <span>Past 7 Days Consistency</span>
+              <span id="habitCompletionRate" style="color: var(--brand-primary-light); font-weight: 800;">85% Done</span>
+            </div>
+            <div class="matrix-dots-row" id="matrixDotsRow">
+              <!-- 7 Day dots rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 5. QUICK SCRATCHPAD / FORMULA & DOUBT DUMP -->
+        <!-- ========================================== -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <i class="fa-solid fa-note-sticky"></i>
+              <h2>Important Formulas & Exam Notes</h2>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);" id="notesSavedIndicator">Auto-saved</span>
+          </div>
+
+          <textarea id="scratchpadArea" class="scratchpad-area" placeholder="Jot down quick formulas, professor tips, questions for tutorials, or T1/T2 PYQ topics... (auto-saved locally)"></textarea>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT TARGET EXAM & DATE -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="examModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-days"></i> Set Exam Date</h3>
+        <button class="modal-close-btn" id="closeExamModal">&times;</button>
+      </div>
+
+      <div class="modal-form-group">
+        <label for="customExamNameInput">Exam Title</label>
+        <input type="text" id="customExamNameInput" placeholder="e.g. T1 Examination, T2 Examination, T3 End Sem">
+      </div>
+
+      <div class="modal-form-group">
+        <label for="customExamDateInput">Exam Target Date & Time</label>
+        <input type="datetime-local" id="customExamDateInput">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelExamModal">Cancel</button>
+        <button class="btn-primary" id="saveExamModal">Save & Recalculate</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADD CUSTOM SUBJECT TO SEMESTER -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="subjectModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-book"></i> Add Subject to Semester</h3>
+        <button class="modal-close-btn" id="closeSubjectModal">&times;</button>
+      </div>
+
+      <div class="modal-form-group">
+        <label for="newSubjectCodeInput">Course Code (Optional)</label>
+        <input type="text" id="newSubjectCodeInput" placeholder="e.g. 15B11CI411">
+      </div>
+
+      <div class="modal-form-group">
+        <label for="newSubjectNameInput">Subject Name</label>
+        <input type="text" id="newSubjectNameInput" placeholder="e.g. Microprocessors & Microcontrollers" required>
+      </div>
+
+      <div class="modal-form-group">
+        <label for="newSubjectColorInput">Subject Accent Color</label>
+        <input type="color" id="newSubjectColorInput" value="#ec4899" style="height: 45px; padding: 4px; cursor: pointer;">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelSubjectModal">Cancel</button>
+        <button class="btn-primary" id="saveSubjectModal">Create Subject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="presets.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
